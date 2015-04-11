@@ -2,33 +2,6 @@ declare module nullstone {
     var version: string;
 }
 declare module nullstone {
-    function Annotation(type: Function, name: string, value: any, forbidMultiple?: boolean): void;
-    function GetAnnotations(type: Function, name: string): any[];
-    interface ITypedAnnotation<T> {
-        (type: Function, ...values: T[]): any;
-        Get(type: Function): T[];
-    }
-    function CreateTypedAnnotation<T>(name: string): ITypedAnnotation<T>;
-}
-declare module nullstone.async {
-    interface IAsyncRequest<T> {
-        then(success: (result: T) => any, errored?: (error: any) => any): IAsyncRequest<T>;
-    }
-    interface IAsyncResolution<T> {
-        (resolve: (result: T) => any, reject: (error: any) => any): any;
-    }
-    function create<T>(resolution: IAsyncResolution<T>): IAsyncRequest<T>;
-    function resolve<T>(obj: T): IAsyncRequest<T>;
-    function reject<T>(err: any): IAsyncRequest<T>;
-    function many<T>(arr: IAsyncRequest<T>[]): IAsyncRequest<T[]>;
-}
-declare module nullstone {
-    function convertAnyToType(val: any, type: Function): any;
-    function convertStringToEnum<T>(val: string, en: any): T;
-    function registerTypeConverter(type: Function, converter: (val: any) => any): void;
-    function registerEnumConverter(e: any, converter: (val: any) => any): void;
-}
-declare module nullstone {
     class DirResolver implements ITypeResolver {
         loadAsync(moduleName: string, name: string): async.IAsyncRequest<any>;
         resolveType(moduleName: string, name: string, oresolve: IOutType): boolean;
@@ -40,9 +13,6 @@ declare module nullstone {
         constructor(Object: any);
         static fromAny<T>(enuType: any, val: any, fallback?: number): number;
     }
-}
-declare module nullstone {
-    function equals(val1: any, val2: any): boolean;
 }
 declare module nullstone {
     interface IEventArgs {
@@ -111,6 +81,11 @@ declare module nullstone {
     var IEnumerator_: IEnumeratorDeclaration<any>;
 }
 declare module nullstone {
+    interface ITypeResolver {
+        resolveType(moduleName: string, name: string, oresolve: IOutType): boolean;
+    }
+}
+declare module nullstone {
     interface IIndexedPropertyInfo {
         getValue(obj: any, index: number): any;
         setValue(obj: any, index: number, value: any): any;
@@ -122,11 +97,6 @@ declare module nullstone {
         getValue(ro: any, index: number): any;
         setValue(ro: any, index: number, value: any): void;
         static find(typeOrObj: any): IndexedPropertyInfo;
-    }
-}
-declare module nullstone {
-    interface ITypeResolver {
-        resolveType(moduleName: string, name: string, oresolve: IOutType): boolean;
     }
 }
 declare module nullstone {
@@ -220,6 +190,12 @@ declare module nullstone {
     function doesInheritFrom(t: Function, type: any): boolean;
 }
 declare module nullstone {
+    function convertAnyToType(val: any, type: Function): any;
+    function convertStringToEnum<T>(val: string, en: any): T;
+    function registerTypeConverter(type: Function, converter: (val: any) => any): void;
+    function registerEnumConverter(e: any, converter: (val: any) => any): void;
+}
+declare module nullstone {
     enum UriKind {
         RelativeOrAbsolute = 0,
         Absolute = 1,
@@ -270,6 +246,30 @@ declare module nullstone {
     }
 }
 declare module nullstone {
+    function Annotation(type: Function, name: string, value: any, forbidMultiple?: boolean): void;
+    function GetAnnotations(type: Function, name: string): any[];
+    interface ITypedAnnotation<T> {
+        (type: Function, ...values: T[]): any;
+        Get(type: Function): T[];
+    }
+    function CreateTypedAnnotation<T>(name: string): ITypedAnnotation<T>;
+}
+declare module nullstone.async {
+    interface IAsyncRequest<T> {
+        then(success: (result: T) => any, errored?: (error: any) => any): IAsyncRequest<T>;
+    }
+    interface IAsyncResolution<T> {
+        (resolve: (result: T) => any, reject: (error: any) => any): any;
+    }
+    function create<T>(resolution: IAsyncResolution<T>): IAsyncRequest<T>;
+    function resolve<T>(obj: T): IAsyncRequest<T>;
+    function reject<T>(err: any): IAsyncRequest<T>;
+    function many<T>(arr: IAsyncRequest<T>[]): IAsyncRequest<T[]>;
+}
+declare module nullstone {
+    function equals(val1: any, val2: any): boolean;
+}
+declare module nullstone {
     class AggregateError {
         errors: any[];
         constructor(errors: any[]);
@@ -288,53 +288,6 @@ declare module nullstone {
         library: Library;
         error: Error;
         constructor(library: Library, error: Error);
-    }
-}
-declare module nullstone.markup.events {
-    interface IResolveType {
-        (xmlns: string, name: string): IOutType;
-    }
-    interface IResolveObject {
-        (type: any): any;
-    }
-    interface IResolvePrimitive {
-        (type: any, text: string): any;
-    }
-    interface IResolveResources {
-        (owner: any, ownerType: any): any;
-    }
-    interface IBranchSkip<T> {
-        (root: T, obj: any): any;
-    }
-    interface IObject {
-        (obj: any, isContent: boolean): any;
-    }
-    interface IObjectEnd {
-        (obj: any, key: any, isContent: boolean, prev: any): any;
-    }
-    interface IText {
-        (text: string): any;
-    }
-    interface IName {
-        (name: string): any;
-    }
-    interface IPropertyStart {
-        (ownerType: any, propName: string): any;
-    }
-    interface IPropertyEnd {
-        (ownerType: any, propName: string): any;
-    }
-    interface IAttributeStart {
-        (ownerType: any, attrName: string): any;
-    }
-    interface IAttributeEnd {
-        (ownerType: any, attrName: string, obj: any): any;
-    }
-    interface IResumableError {
-        (e: Error): boolean;
-    }
-    interface IError {
-        (e: Error): any;
     }
 }
 declare module nullstone.markup {
@@ -419,6 +372,53 @@ declare module nullstone.markup {
         collect(root: T, customCollector?: ICustomCollector): void;
         add(uri: string, name: string): boolean;
         resolve(): async.IAsyncRequest<any>;
+    }
+}
+declare module nullstone.markup.events {
+    interface IResolveType {
+        (xmlns: string, name: string): IOutType;
+    }
+    interface IResolveObject {
+        (type: any): any;
+    }
+    interface IResolvePrimitive {
+        (type: any, text: string): any;
+    }
+    interface IResolveResources {
+        (owner: any, ownerType: any): any;
+    }
+    interface IBranchSkip<T> {
+        (root: T, obj: any): any;
+    }
+    interface IObject {
+        (obj: any, isContent: boolean): any;
+    }
+    interface IObjectEnd {
+        (obj: any, key: any, isContent: boolean, prev: any): any;
+    }
+    interface IText {
+        (text: string): any;
+    }
+    interface IName {
+        (name: string): any;
+    }
+    interface IPropertyStart {
+        (ownerType: any, propName: string): any;
+    }
+    interface IPropertyEnd {
+        (ownerType: any, propName: string): any;
+    }
+    interface IAttributeStart {
+        (ownerType: any, attrName: string): any;
+    }
+    interface IAttributeEnd {
+        (ownerType: any, attrName: string, obj: any): any;
+    }
+    interface IResumableError {
+        (e: Error): boolean;
+    }
+    interface IError {
+        (e: Error): any;
     }
 }
 declare module nullstone.markup.xaml {
